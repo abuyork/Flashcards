@@ -12,10 +12,10 @@ export function Header() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
-                Codewars Flashcards
+                Interview Flashcards
               </h1>
               <p className="text-sm text-gray-400">
-                Master your coding skills
+                Review and practice coding questions
               </p>
             </div>
           </div>

@@ -54,10 +54,11 @@ export function FlashcardList({ onEdit }: Props) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-      {filteredCards.map((card) => (
+      {filteredCards.map((card, index) => (
         <div
           key={card.id}
-          className="flashcard-grid-item group bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"
+          className="flashcard-grid-item shimmer"
+          style={{ '--delay': index } as React.CSSProperties}
         >
           <div className="p-5">
             <div className="flex justify-between items-start">

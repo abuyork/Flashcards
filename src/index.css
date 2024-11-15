@@ -8,75 +8,115 @@
   }
 }
 
-/* Smooth transitions */
-.fade-enter {
-  opacity: 0;
-  transform: scale(0.95);
+/* Sophisticated entrance animations */
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-.fade-enter-active {
-  opacity: 1;
-  transform: scale(1);
-  transition: opacity 300ms ease-out, transform 300ms ease-out;
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.fade-exit {
-  opacity: 1;
-  transform: scale(1);
+/* Elegant hover animations */
+@keyframes softFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
 }
 
-.fade-exit-active {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 300ms ease-out, transform 300ms ease-out;
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
 }
 
-/* Card hover effects */
+/* Card animations */
 .flashcard-grid-item {
-  transition: all 0.3s ease;
+  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+.flashcard-grid-item:nth-child(n) {
+  animation-delay: calc(0.1s * var(--delay, 0));
 }
 
 .flashcard-grid-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px) scale(1.02);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 20px rgba(79, 70, 229, 0.1);
 }
 
-/* Smooth background transitions */
-.dark .bg-transition {
-  transition: background-color 0.3s ease;
+/* Shimmering effect on cards */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
 }
 
-/* Floating animation for cards */
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
+/* Floating icon animation */
 .float-animation {
-  animation: float 6s ease-in-out infinite;
+  animation: softFloat 3s ease-in-out infinite;
 }
 
 /* Progress bar animation */
-@keyframes progress {
-  from {
+@keyframes progressGrow {
+  0% {
     width: 0;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
 .animate-progress {
-  animation: progress 0.6s ease-out;
+  animation: progressGrow 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: linear-gradient(
+    90deg,
+    rgb(79, 70, 229) 0%,
+    rgb(147, 51, 234) 100%
+  );
+}
+
+/* Modal animations */
+.modal-enter {
+  animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -84,6 +124,58 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #475569;
-  border-radius: 4px;
+  background: rgba(79, 70, 229, 0.3);
+  border-radius: 3px;
+  transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 70, 229, 0.5);
+}
+
+/* Button hover effects */
+.btn-hover-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-hover-effect::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.6s, opacity 0.6s;
+}
+
+.btn-hover-effect:hover::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* Micro-interactions */
+.micro-bounce {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.micro-bounce:hover {
+  transform: scale(1.05);
+}
+
+/* Loading state animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

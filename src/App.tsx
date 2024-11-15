@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Brain, Grid, List, Plus, X } from 'lucide-react';
+import { Brain, Plus, X } from 'lucide-react';
 import { Header } from './components/Header';
 import { Filters } from './components/Filters';
 import { FlashcardList } from './components/FlashcardList';
@@ -13,7 +13,7 @@ export default function App() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isReviewMode, setIsReviewMode] = useState(false);
   const [editingCard, setEditingCard] = useState<Flashcard | undefined>();
-  const { viewMode, setViewMode } = useStore();
+  const { viewMode } = useStore();
   const flashcards = useStore((state) => state.flashcards);
 
   const [showAllCards, setShowAllCards] = useState(false);
@@ -57,34 +57,6 @@ export default function App() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <div className="flex items-center space-x-2 bg-white dark:bg-gray-800 rounded-md shadow-sm p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded ${
-                    viewMode === 'grid'
-                      ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-200'
-                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-                  }`}
-                >
-                  <Grid className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => setViewMode('all')}
-                  className={`p-2 rounded ${
-                    viewMode === 'all'
-                      ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-200'
-                      : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-                  }`}
-                >
-                  <List className="h-5 w-5" />
-                </button>
-              </div>
-              <button
-                onClick={() => setShowAllCards(true)}
-                className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
-              >
-                View All
-              </button>
               <button
                 onClick={() => setIsReviewMode(true)}
                 disabled={reviewableCards.length === 0}
