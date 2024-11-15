@@ -130,7 +130,7 @@ export function ReviewMode({ onClose }: Props) {
                     <Editor
                       value={currentCard.solution}
                       language="javascript"
-                      theme={useStore.getState().darkMode ? 'vs-dark' : 'light'}
+                      theme="vs-dark"
                       options={{
                         readOnly: true,
                         minimap: { enabled: false },

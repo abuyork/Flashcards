@@ -13,6 +13,7 @@ interface State {
   updateFilters: (filters: Partial<FlashcardFilters>) => void;
   setViewMode: (mode: 'grid' | 'list' | 'all') => void;
   reviewFlashcard: (id: string, score: number) => void;
+  darkMode: boolean;
 }
 
 // Spaced repetition intervals (in days) based on mastery level
@@ -38,6 +39,7 @@ export const useStore = create<State>()(
         sortOrder: 'desc',
       },
       viewMode: 'grid',
+      darkMode: false,
 
       addFlashcard: (flashcard) =>
         set((state) => ({
