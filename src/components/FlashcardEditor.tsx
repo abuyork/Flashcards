@@ -87,7 +87,7 @@ export function FlashcardEditor({ flashcard, onClose }: Props) {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white h-[100px]"
                   required
                 />
               </div>
@@ -140,6 +140,21 @@ export function FlashcardEditor({ flashcard, onClose }: Props) {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Explanation
+                </label>
+                <textarea
+                  value={formData.explanation}
+                  onChange={(e) => setFormData({ ...formData, explanation: e.target.value })}
+                  rows={4}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white h-[200px]"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Solution
                 </label>
                 <div className="border rounded-lg overflow-hidden">
@@ -149,7 +164,7 @@ export function FlashcardEditor({ flashcard, onClose }: Props) {
                       JavaScript
                     </span>
                   </div>
-                  <div className="h-[calc(100vh-500px)] min-h-[200px]">
+                  <div className="h-[420px]">
                     <Editor
                       value={formData.solution}
                       onChange={(value) => setFormData({ ...formData, solution: value || '' })}
@@ -163,21 +178,6 @@ export function FlashcardEditor({ flashcard, onClose }: Props) {
                     />
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Explanation
-                </label>
-                <textarea
-                  value={formData.explanation}
-                  onChange={(e) => setFormData({ ...formData, explanation: e.target.value })}
-                  rows={4}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white h-[calc(100vh-400px)] min-h-[200px]"
-                  required
-                />
               </div>
             </div>
           </div>
