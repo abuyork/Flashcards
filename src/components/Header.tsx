@@ -1,4 +1,25 @@
-import { Swords } from 'lucide-react';
+const CodeLogo = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    className="h-8 w-8 sm:h-10 sm:w-10 text-indigo-400 float-animation"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {/* Stylized brackets with dots representing code/data */}
+    <path d="M8 3L4 12l4 9" />
+    <path d="M16 3l4 9-4 9" />
+    {/* Connection dots */}
+    <circle cx="12" cy="7" r="1" fill="currentColor" />
+    <circle cx="12" cy="12" r="1" fill="currentColor" />
+    <circle cx="12" cy="17" r="1" fill="currentColor" />
+    {/* Data flow lines */}
+    <path d="M12 7l-2 5 2 5" strokeDasharray="2 2" />
+    <path d="M12 7l2 5-2 5" strokeDasharray="2 2" />
+  </svg>
+);
 
 export function Header() {
   return (
@@ -7,7 +28,7 @@ export function Header() {
         <div className="flex justify-between items-center h-16 sm:h-20">
           <div className="flex items-center space-x-3">
             <div className="relative">
-              <Swords className="h-8 w-8 sm:h-10 sm:w-10 text-indigo-400 float-animation" />
+              <CodeLogo />
               <div className="absolute inset-0 bg-indigo-400/20 blur-xl rounded-full" />
             </div>
             <div>
