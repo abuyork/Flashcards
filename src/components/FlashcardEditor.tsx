@@ -154,7 +154,7 @@ export function FlashcardEditor({ flashcard, onClose }: Props) {
                       value={formData.solution}
                       onChange={(value) => setFormData({ ...formData, solution: value || '' })}
                       language="javascript"
-                      theme={useStore.getState().darkMode ? 'vs-dark' : 'light'}
+                      theme="vs-dark"
                       options={{
                         minimap: { enabled: false },
                         scrollBeyondLastLine: false,

@@ -6,13 +6,11 @@ import { addDays } from 'date-fns';
 interface State {
   flashcards: Flashcard[];
   filters: FlashcardFilters;
-  darkMode: boolean;
   viewMode: 'grid' | 'list' | 'all';
   addFlashcard: (flashcard: Omit<Flashcard, 'id' | 'created' | 'updated'>) => void;
   updateFlashcard: (id: string, updates: Partial<Flashcard>) => void;
   deleteFlashcard: (id: string) => void;
   updateFilters: (filters: Partial<FlashcardFilters>) => void;
-  toggleDarkMode: () => void;
   setViewMode: (mode: 'grid' | 'list' | 'all') => void;
   reviewFlashcard: (id: string, score: number) => void;
 }
@@ -39,7 +37,6 @@ export const useStore = create<State>()(
         sortBy: 'difficulty',
         sortOrder: 'desc',
       },
-      darkMode: false,
       viewMode: 'grid',
 
       addFlashcard: (flashcard) =>
@@ -75,11 +72,6 @@ export const useStore = create<State>()(
       updateFilters: (filters) =>
         set((state) => ({
           filters: { ...state.filters, ...filters },
-        })),
-
-      toggleDarkMode: () =>
-        set((state) => ({
-          darkMode: !state.darkMode,
         })),
 
       setViewMode: (mode) =>

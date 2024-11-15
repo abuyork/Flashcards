@@ -13,7 +13,7 @@ export default function App() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isReviewMode, setIsReviewMode] = useState(false);
   const [editingCard, setEditingCard] = useState<Flashcard | undefined>();
-  const { darkMode, viewMode, setViewMode } = useStore();
+  const { viewMode, setViewMode } = useStore();
   const flashcards = useStore((state) => state.flashcards);
 
   const [showAllCards, setShowAllCards] = useState(false);
@@ -42,8 +42,8 @@ export default function App() {
   };
 
   return (
-    <div className={darkMode ? 'dark' : ''}>
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="dark">
+      <div className="min-h-screen bg-gray-900">
         <Header />
         
         <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6">

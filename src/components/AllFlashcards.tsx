@@ -1,4 +1,3 @@
-import React from 'react';
 import { format } from 'date-fns';
 import { Edit, Trash2 } from 'lucide-react';
 import { useStore } from '../store/useStore';
