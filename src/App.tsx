@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Brain, Plus, X } from 'lucide-react';
 import { Header } from './components/Header';
 import { Filters } from './components/Filters';
@@ -15,6 +15,7 @@ export default function App() {
   const [editingCard, setEditingCard] = useState<Flashcard | undefined>();
   const { viewMode } = useStore();
   const flashcards = useStore((state) => state.flashcards);
+  const loadFlashcards = useStore((state) => state.loadFlashcards);
 
   const [showAllCards, setShowAllCards] = useState(false);
   
@@ -40,6 +41,10 @@ export default function App() {
     setEditingCard(undefined);
     setIsEditorOpen(false);
   };
+
+  useEffect(() => {
+    loadFlashcards();
+  }, [loadFlashcards]);
 
   return (
     <div className="dark">
