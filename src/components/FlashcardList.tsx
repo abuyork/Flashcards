@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { Edit, Trash2 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { Flashcard } from '../types';
@@ -8,116 +7,107 @@ interface Props {
 }
 
 export function FlashcardList({ onEdit }: Props) {
-  const { flashcards, filters, deleteFlashcard } = useStore();
-
-  const filteredCards = flashcards
-    .filter((card) => {
-      if (filters.difficulty && card.difficulty !== filters.difficulty) {
-        return false;
-      }
-      if (
-        filters.topics.length > 0 &&
-        !filters.topics.some((topic) => card.topics.includes(topic))
-      ) {
-        return false;
-      }
-      if (filters.searchQuery) {
-        const query = filters.searchQuery.toLowerCase();
-        return (
-          card.title.toLowerCase().includes(query) ||
-          card.description.toLowerCase().includes(query) ||
-          card.solution.toLowerCase().includes(query)
-        );
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      switch (filters.sortBy) {
-        case 'difficulty':
-          return filters.sortOrder === 'asc'
-            ? a.difficulty - b.difficulty
-            : b.difficulty - a.difficulty;
-        case 'lastReviewed':
-          if (!a.lastReviewed) return 1;
-          if (!b.lastReviewed) return -1;
-          return filters.sortOrder === 'asc'
-            ? a.lastReviewed.getTime() - b.lastReviewed.getTime()
-            : b.lastReviewed.getTime() - a.lastReviewed.getTime();
-        case 'mastery':
-          return filters.sortOrder === 'asc'
-            ? a.mastery - b.mastery
-            : b.mastery - a.mastery;
-        default:
-          return 0;
-      }
-    });
+  const flashcards = useStore((state) => state.flashcards.filter((card) => {
+    const filters = state.filters;
+    if (filters.difficulty && card.difficulty !== filters.difficulty) {
+      return false;
+    }
+    if (
+      filters.topics.length > 0 &&
+      !filters.topics.some((topic) => card.topics.includes(topic))
+    ) {
+      return false;
+    }
+    if (filters.searchQuery) {
+      const query = filters.searchQuery.toLowerCase();
+      return (
+        card.title.toLowerCase().includes(query) ||
+        card.description.toLowerCase().includes(query) ||
+        card.topics.some((topic) => topic.toLowerCase().includes(query))
+      );
+    }
+    return true;
+  }));
+  
+  const deleteFlashcard = useStore((state) => state.deleteFlashcard);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-      {filteredCards.map((card, index) => (
-        <div
-          key={card.id}
-          className="flashcard-grid-item shimmer"
-          style={{ '--delay': index } as React.CSSProperties}
-        >
-          <div className="p-5">
-            <div className="flex justify-between items-start">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                {card.title}
-              </h3>
-              <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => onEdit(card)}
-                  className="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors"
-                >
-                  <Edit className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() => deleteFlashcard(card.id)}
-                  className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-3 flex items-center space-x-2">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                {card.difficulty} kyu
-              </span>
-              <div className="flex-1 h-2 bg-gray-200 rounded-full dark:bg-gray-700 overflow-hidden">
-                <div
-                  className="h-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full animate-progress"
-                  style={{ width: `${card.mastery}%` }}
-                />
-              </div>
-            </div>
-
-            <p className="mt-3 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
-              {card.description}
-            </p>
-
-            <div className="mt-4">
-              <div className="flex flex-wrap gap-2">
-                {card.topics.map((topic) => (
-                  <span
-                    key={topic}
-                    className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 transition-colors hover:bg-indigo-100 dark:hover:bg-indigo-900"
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="text-left text-gray-400 text-sm">
+            <th className="py-3 px-4">TITLE</th>
+            <th className="py-3 px-4">DIFFICULTY</th>
+            <th className="py-3 px-4">TOPICS</th>
+            <th className="py-3 px-4">MASTERY</th>
+            <th className="py-3 px-4">LAST REVIEWED</th>
+            <th className="py-3 px-4">NEXT REVIEW</th>
+            <th className="py-3 px-4">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {flashcards.map((flashcard: Flashcard) => (
+            <tr 
+              key={flashcard.id}
+              className="border-t border-gray-800 hover:bg-gray-800/50 transition-colors"
+            >
+              <td className="py-4 px-4">
+                <div>
+                  <div className="text-white">{flashcard.title}</div>
+                  <div className="text-gray-400 text-sm">{flashcard.description}</div>
+                </div>
+              </td>
+              <td className="py-4 px-4">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                  {flashcard.difficulty} kyu
+                </span>
+              </td>
+              <td className="py-4 px-4">
+                <div className="flex flex-wrap gap-1">
+                  {flashcard.topics?.map((topic: string) => (
+                    <span
+                      key={topic}
+                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-200"
+                    >
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              </td>
+              <td className="py-4 px-4">
+                <div className="w-24 bg-gray-700 rounded-full h-2">
+                  <div 
+                    className="bg-green-500 h-2 rounded-full" 
+                    style={{ width: `${flashcard.mastery || 0}%` }}
+                  />
+                </div>
+              </td>
+              <td className="py-4 px-4 text-gray-400">
+                {flashcard.lastReviewed ? new Date(flashcard.lastReviewed).toLocaleDateString() : 'Never'}
+              </td>
+              <td className="py-4 px-4 text-gray-400">
+                {flashcard.nextReview ? new Date(flashcard.nextReview).toLocaleDateString() : 'Available'}
+              </td>
+              <td className="py-4 px-4">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onEdit(flashcard)}
+                    className="text-gray-400 hover:text-white transition-colors"
                   >
-                    {topic}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {card.lastReviewed && (
-              <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                Last reviewed: {format(card.lastReviewed, "MMM d, yyyy 'at' h:mm a")}
-              </p>
-            )}
-          </div>
-        </div>
-      ))}
+                    <Edit className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={() => deleteFlashcard(flashcard.id)}
+                    className="text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
