@@ -13,26 +13,80 @@ export function ReviewMode({ onClose }: Props) {
   const [showSolution, setShowSolution] = useState(false);
   const [isRunning] = useState(true);
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [, setHasAnswered] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [remainingCards, setRemainingCards] = useState<typeof flashcards>([]);
 
-  const reviewableCards = flashcards.filter(
-    (card) => !card.nextReview || new Date() >= new Date(card.nextReview)
-  );
+  const calculateReviewableCards = () => {
+    return flashcards.filter(
+      (card) => !card.nextReview || new Date() >= new Date(card.nextReview)
+    );
+  };
 
-  const currentCard = reviewableCards[currentIndex];
+  useEffect(() => {
+    setRemainingCards(calculateReviewableCards());
+  }, [flashcards]);
+
+  const currentCard = remainingCards[currentIndex];
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
-    if (isRunning) {
+    if (isRunning && !showSolution) {
       interval = setInterval(() => {
         setTimeElapsed((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isRunning]);
+  }, [isRunning, showSolution]);
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' && currentIndex > 0) {
+        handlePrevious();
+      } else if (e.key === 'ArrowRight' && currentIndex < remainingCards.length - 1) {
+        handleNext();
+      } else if (e.key === ' ' && !showSolution) {
+        e.preventDefault();
+        setShowSolution(true);
+      } else if (showSolution) {
+        if (e.key === '1') {
+          handleRate(-5); // Still Hard
+        } else if (e.key === '2') {
+          handleRate(10); // Got It
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentIndex, showSolution, remainingCards.length]);
+
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('reviewProgress');
+    if (savedProgress) {
+      const { index, timestamp } = JSON.parse(savedProgress);
+      // Only restore if within last hour
+      if (Date.now() - timestamp < 3600000) {
+        setCurrentIndex(index);
+      } else {
+        localStorage.removeItem('reviewProgress');
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('reviewProgress', JSON.stringify({
+      index: currentIndex,
+      timestamp: Date.now()
+    }));
+  }, [currentIndex]);
 
   const handleNext = () => {
     setShowSolution(false);
-    if (currentIndex < reviewableCards.length - 1) {
+    setHasAnswered(false);
+    setTimeElapsed(0);
+    
+    if (currentIndex < remainingCards.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -44,9 +98,22 @@ export function ReviewMode({ onClose }: Props) {
     }
   };
 
-  const handleRate = (score: number) => {
-    reviewFlashcard(currentCard.id, score);
-    handleNext();
+  const handleRate = async (score: number) => {
+    try {
+      setHasAnswered(true);
+      await reviewFlashcard(currentCard.id, score);
+      
+      const updatedCards = calculateReviewableCards();
+      setRemainingCards(updatedCards);
+      
+      if (currentIndex < updatedCards.length - 1) {
+        handleNext();
+      } else if (updatedCards.length === 0) {
+        onClose();
+      }
+    } catch (error) {
+      console.error('Failed to review flashcard:', error);
+    }
   };
 
   if (!currentCard) {
@@ -73,13 +140,13 @@ export function ReviewMode({ onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
-      <div className="bg-white dark:bg-gray-900 rounded-xl w-full max-w-[95vw] sm:max-w-2xl max-h-[95vh] overflow-y-auto shadow-2xl animate-slideUp">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50 animate-fadeIn">
+      <div className="bg-white dark:bg-gray-900 rounded-xl w-full max-w-[98vw] sm:max-w-2xl max-h-[98vh] overflow-y-auto shadow-2xl animate-slideUp">
         <div className="p-3 sm:p-4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-sm">
               <span className="font-medium text-gray-500 dark:text-gray-400">
-                Card {currentIndex + 1} of {reviewableCards.length}
+                Card {currentIndex + 1} of {remainingCards.length}
               </span>
               <span className="font-medium text-gray-500 dark:text-gray-400">
                 {Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toString().padStart(2, '0')}
@@ -126,16 +193,25 @@ export function ReviewMode({ onClose }: Props) {
                       Solution
                     </span>
                   </div>
-                  <div className="h-48 sm:h-64">
+                  <div className="h-36 sm:h-48 md:h-64">
+                    {isLoading && (
+                      <div className="flex items-center justify-center h-full">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                      </div>
+                    )}
                     <Editor
                       value={currentCard.solution}
                       language="javascript"
                       theme="vs-dark"
+                      loading={<div className="animate-pulse h-full bg-gray-800" />}
+                      beforeMount={() => setIsLoading(true)}
+                      onMount={() => setIsLoading(false)}
                       options={{
                         readOnly: true,
                         minimap: { enabled: false },
                         scrollBeyondLastLine: false,
-                        fontSize: 14,
+                        fontSize: window.innerWidth < 640 ? 12 : 14,
+                        lineNumbers: window.innerWidth >= 640 ? 'on' : 'off',
                       }}
                     />
                   </div>
@@ -184,14 +260,15 @@ export function ReviewMode({ onClose }: Props) {
             <button
               onClick={handlePrevious}
               disabled={currentIndex === 0}
-              className="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 disabled:opacity-50"
+              aria-label="Previous flashcard"
+              className="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ChevronLeft className="h-4 w-4 mr-1" />
               Previous
             </button>
             <button
               onClick={handleNext}
-              disabled={currentIndex === reviewableCards.length - 1}
+              disabled={currentIndex === remainingCards.length - 1}
               className="inline-flex items-center px-3 py-2 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 disabled:opacity-50"
             >
               Next
