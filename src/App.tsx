@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Brain, Plus, X } from 'lucide-react';
+import { Brain, Plus } from 'lucide-react';
 import { Header } from './components/Header';
 import { Filters } from './components/Filters';
 import { FlashcardList } from './components/FlashcardList';
 import { FlashcardEditor } from './components/FlashcardEditor';
 import { ReviewMode } from './components/ReviewMode';
-import { AllFlashcards } from './components/AllFlashcards';
 import { Flashcard } from './types';
 import { useStore } from './store/useStore';
 
@@ -13,12 +12,10 @@ export default function App() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isReviewMode, setIsReviewMode] = useState(false);
   const [editingCard, setEditingCard] = useState<Flashcard | undefined>();
-  const { viewMode } = useStore();
+  useStore();
   const flashcards = useStore((state) => state.flashcards);
   const loadFlashcards = useStore((state) => state.loadFlashcards);
 
-  const [showAllCards, setShowAllCards] = useState(false);
-  
   const reviewableCards = flashcards.filter(
     (card) => !card.nextReview || new Date() >= new Date(card.nextReview)
   );
@@ -87,34 +84,9 @@ export default function App() {
 
           <div className="space-y-6">
             <Filters />
-            {viewMode === 'all' ? (
-              <AllFlashcards onEdit={handleEdit} />
-            ) : (
-              <FlashcardList onEdit={handleEdit} />
-            )}
+            <FlashcardList onEdit={handleEdit} />
           </div>
         </main>
-
-        {showAllCards && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white dark:bg-gray-900 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    All Flashcards
-                  </h2>
-                  <button
-                    onClick={() => setShowAllCards(false)}
-                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                  >
-                    <X className="h-6 w-6" />
-                  </button>
-                </div>
-                <AllFlashcards onEdit={handleEdit} />
-              </div>
-            </div>
-          </div>
-        )}
 
         {isEditorOpen && (
           <FlashcardEditor flashcard={editingCard} onClose={handleClose} />
