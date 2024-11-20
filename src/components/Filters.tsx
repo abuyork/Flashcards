@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, SortAsc, SortDesc, ChevronDown } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { KyuLevel, Topic } from '../types';
@@ -19,6 +19,26 @@ export function Filters() {
   const [isTopicsOpen, setIsTopicsOpen] = useState(false);
   const [isDifficultyOpen, setIsDifficultyOpen] = useState(false);
 
+  useEffect(() => {
+    const cursorDot = document.createElement('div');
+    cursorDot.className = 'cursor-dot';
+    document.body.appendChild(cursorDot);
+
+    const updateCursorPosition = (e: MouseEvent) => {
+      requestAnimationFrame(() => {
+        cursorDot.style.left = `${e.clientX}px`;
+        cursorDot.style.top = `${e.clientY}px`;
+      });
+    };
+
+    window.addEventListener('mousemove', updateCursorPosition);
+
+    return () => {
+      window.removeEventListener('mousemove', updateCursorPosition);
+      document.body.removeChild(cursorDot);
+    };
+  }, []);
+
   const formatDifficulty = (difficulty: KyuLevel | null) => {
     if (!difficulty) return 'All Levels';
     return difficulty === 'Train' ? 'Train' : `${difficulty} kyu`;
@@ -33,7 +53,7 @@ export function Filters() {
           placeholder="Search flashcards..."
           value={filters.searchQuery}
           onChange={(e) => updateFilters({ searchQuery: e.target.value })}
-          className="w-full pl-10 pr-4 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm"
+          className={`w-full pl-10 pr-4 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm`}
         />
       </div>
 
@@ -45,7 +65,7 @@ export function Filters() {
           </label>
           <button
             onClick={() => setIsDifficultyOpen(!isDifficultyOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className={`w-full flex items-center justify-between px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
           >
             <span>{formatDifficulty(filters.difficulty)}</span>
             <ChevronDown className={`h-4 w-4 transition-transform ${isDifficultyOpen ? 'rotate-180' : ''}`} />
@@ -95,7 +115,7 @@ export function Filters() {
           </label>
           <button
             onClick={() => setIsTopicsOpen(!isTopicsOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className={`w-full flex items-center justify-between px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
           >
             <span>
               {filters.topics.length === 0
@@ -144,7 +164,7 @@ export function Filters() {
                   sortBy: e.target.value as typeof filters.sortBy,
                 })
               }
-              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className={`flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
             >
               <option value="difficulty">Difficulty</option>
               <option value="lastReviewed">Last Reviewed</option>
@@ -156,7 +176,7 @@ export function Filters() {
                   sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc',
                 })
               }
-              className="p-2 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className={`p-2 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700`}
             >
               {filters.sortOrder === 'asc' ? (
                 <SortAsc className="h-5 w-5 text-gray-500 dark:text-gray-400" />

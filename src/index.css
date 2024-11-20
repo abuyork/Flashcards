@@ -190,3 +190,34 @@
 .difficulty-Train:hover {
   background-color: #1a1a1a;
 }
+
+/* Remove the old cursor styles and replace with these */
+* {
+  cursor: none !important;
+}
+
+.cursor-dot {
+  width: 15px;
+  height: 15px;
+  background-color: #ffffff;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease-out;
+  border-radius: 50%;
+  mix-blend-mode: difference;
+}
+
+.cursor-dot::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: inherit;
+  filter: blur(3px);
+  opacity: 0.3;
+}
