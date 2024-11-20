@@ -13,6 +13,7 @@ const kyuColors: Record<KyuLevel, { bg: string; text: string }> = {
   6: { bg: 'bg-blue-900', text: 'text-blue-200' },
   7: { bg: 'bg-indigo-900', text: 'text-indigo-200' },
   8: { bg: 'bg-purple-900', text: 'text-purple-200' },
+  'Train': { bg: 'bg-black', text: 'text-white' },
 };
 
 // Color mappings for topics
@@ -125,7 +126,7 @@ export function FlashcardList({ onEdit }: Props) {
               </td>
               <td className="py-4 px-4">
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${kyuColors[flashcard.difficulty].bg} ${kyuColors[flashcard.difficulty].text}`}>
-                  {flashcard.difficulty} kyu
+                  {flashcard.difficulty === 'Train' ? 'Train' : `${flashcard.difficulty} kyu`}
                 </span>
               </td>
               <td className="py-4 px-4">

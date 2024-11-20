@@ -179,3 +179,14 @@
 .loading-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Add new Train difficulty styling */
+.difficulty-Train {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* If you have hover states for difficulties */
+.difficulty-Train:hover {
+  background-color: #1a1a1a;
+}

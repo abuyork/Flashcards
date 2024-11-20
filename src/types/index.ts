@@ -1,4 +1,4 @@
-export type KyuLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+export type KyuLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | "Train";
 
 export type Topic =
   | 'Algorithms'
@@ -9,6 +9,17 @@ export type Topic =
   | 'Regular Expressions'
   | 'Functional Programming'
   | 'Object-oriented Programming';
+
+export type Difficulty = 
+  | "8 kyu"
+  | "7 kyu"
+  | "6 kyu"
+  | "5 kyu"
+  | "4 kyu"
+  | "3 kyu"
+  | "2 kyu"
+  | "1 kyu"
+  | "Train";
 
 export interface Flashcard {
   id: string;

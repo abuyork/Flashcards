@@ -12,7 +12,7 @@ interface Props {
 const INITIAL_STATE: Omit<Flashcard, 'id' | 'created' | 'updated'> = {
   title: '',
   description: '',
-  difficulty: 8 as KyuLevel,
+  difficulty: 8,
   topics: ['Algorithms'],
   solution: '',
   explanation: '',
@@ -102,7 +102,7 @@ export function FlashcardEditor({ flashcard, onClose }: Props) {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        difficulty: Number(e.target.value) as KyuLevel,
+                        difficulty: e.target.value === "Train" ? "Train" : Number(e.target.value) as KyuLevel,
                       })
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
@@ -112,6 +112,7 @@ export function FlashcardEditor({ flashcard, onClose }: Props) {
                         {kyu} kyu
                       </option>
                     ))}
+                    <option value="Train">Train</option>
                   </select>
                 </div>
 

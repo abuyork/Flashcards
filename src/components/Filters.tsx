@@ -69,6 +69,15 @@ export function Filters() {
                     {kyu} kyu
                   </button>
                 ))}
+                <button
+                  onClick={() => {
+                    updateFilters({ difficulty: 'Train' });
+                    setIsDifficultyOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
+                >
+                  Train
+                </button>
               </div>
             </div>
           )}
