@@ -1,4 +1,4 @@
-import { Edit, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Edit, Trash2, ChevronDown, ChevronUp, Check, X } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { Flashcard, Topic, KyuLevel } from '../types';
 import { useState } from 'react';
@@ -33,6 +33,7 @@ interface Props {
 
 export function FlashcardList({ onEdit }: Props) {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [cardToDelete, setCardToDelete] = useState<string | null>(null);
   const flashcards = useStore((state) => state.flashcards.filter((card) => {
     const filters = state.filters;
     if (filters.difficulty && card.difficulty !== filters.difficulty) {
@@ -67,6 +68,11 @@ export function FlashcardList({ onEdit }: Props) {
       }
       return next;
     });
+  };
+
+  const confirmDelete = (id: string) => {
+    deleteFlashcard(id);
+    setCardToDelete(null);
   };
 
   return (
@@ -156,12 +162,29 @@ export function FlashcardList({ onEdit }: Props) {
                   >
                     <Edit className="h-5 w-5" />
                   </button>
-                  <button
-                    onClick={() => deleteFlashcard(flashcard.id)}
-                    className="text-gray-400 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
+                  {cardToDelete === flashcard.id ? (
+                    <>
+                      <button
+                        onClick={() => confirmDelete(flashcard.id)}
+                        className="text-green-500 hover:text-green-400 transition-colors"
+                      >
+                        <Check className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => setCardToDelete(null)}
+                        className="text-gray-400 hover:text-gray-300 transition-colors"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => setCardToDelete(flashcard.id)}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  )}
                 </div>
               </td>
             </tr>
