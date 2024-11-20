@@ -172,7 +172,7 @@ export function FlashcardList({ onEdit }: Props) {
   );
 }
 
-export function FlashcardCard({ flashcard, onEdit }: { flashcard: Flashcard; onEdit: (card: Flashcard) => void }) {
+export function FlashcardCard({ flashcard }: { flashcard: Flashcard; onEdit: (card: Flashcard) => void }) {
   const [isExpanded, setIsExpanded] = useState(false);
   
   return (
