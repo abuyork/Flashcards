@@ -24,6 +24,7 @@ export interface Flashcard {
   mastery: number; // 0-100
   created: Date;
   updated: Date;
+  isExplanationExpanded?: boolean;
 }
 
 export interface FlashcardFilters {

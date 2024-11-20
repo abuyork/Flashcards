@@ -1,12 +1,38 @@
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useStore } from '../store/useStore';
-import { Flashcard } from '../types';
+import { Flashcard, Topic, KyuLevel } from '../types';
+import { useState } from 'react';
+
+// Color mappings for kyu levels
+const kyuColors: Record<KyuLevel, { bg: string; text: string }> = {
+  1: { bg: 'bg-red-900', text: 'text-red-200' },
+  2: { bg: 'bg-orange-900', text: 'text-orange-200' },
+  3: { bg: 'bg-yellow-900', text: 'text-yellow-200' },
+  4: { bg: 'bg-green-900', text: 'text-green-200' },
+  5: { bg: 'bg-teal-900', text: 'text-teal-200' },
+  6: { bg: 'bg-blue-900', text: 'text-blue-200' },
+  7: { bg: 'bg-indigo-900', text: 'text-indigo-200' },
+  8: { bg: 'bg-purple-900', text: 'text-purple-200' },
+};
+
+// Color mappings for topics
+const topicColors: Record<Topic, { bg: string; text: string }> = {
+  'Algorithms': { bg: 'bg-pink-900', text: 'text-pink-200' },
+  'Data Structures': { bg: 'bg-purple-900', text: 'text-purple-200' },
+  'Mathematics': { bg: 'bg-blue-900', text: 'text-blue-200' },
+  'String Manipulation': { bg: 'bg-green-900', text: 'text-green-200' },
+  'Arrays': { bg: 'bg-yellow-900', text: 'text-yellow-200' },
+  'Regular Expressions': { bg: 'bg-red-900', text: 'text-red-200' },
+  'Functional Programming': { bg: 'bg-indigo-900', text: 'text-indigo-200' },
+  'Object-oriented Programming': { bg: 'bg-teal-900', text: 'text-teal-200' },
+};
 
 interface Props {
   onEdit: (flashcard: Flashcard) => void;
 }
 
 export function FlashcardList({ onEdit }: Props) {
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const flashcards = useStore((state) => state.flashcards.filter((card) => {
     const filters = state.filters;
     if (filters.difficulty && card.difficulty !== filters.difficulty) {
@@ -31,6 +57,18 @@ export function FlashcardList({ onEdit }: Props) {
   
   const deleteFlashcard = useStore((state) => state.deleteFlashcard);
 
+  const toggleExpand = (id: string) => {
+    setExpandedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -54,20 +92,42 @@ export function FlashcardList({ onEdit }: Props) {
               <td className="py-4 px-4">
                 <div>
                   <div className="text-white">{flashcard.title}</div>
-                  <div className="text-gray-400 text-sm">{flashcard.description}</div>
+                  <div className="text-gray-400 text-sm">
+                    <div className={expandedRows.has(flashcard.id) ? '' : 'line-clamp-1'}>
+                      {flashcard.description}
+                    </div>
+                    {flashcard.description.length > 50 && (
+                      <button
+                        onClick={() => toggleExpand(flashcard.id)}
+                        className="text-indigo-400 hover:text-indigo-300 text-xs flex items-center mt-1"
+                      >
+                        {expandedRows.has(flashcard.id) ? (
+                          <>
+                            <ChevronUp className="h-3 w-3 mr-1" />
+                            Show less
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="h-3 w-3 mr-1" />
+                            Show more
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </td>
               <td className="py-4 px-4">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${kyuColors[flashcard.difficulty].bg} ${kyuColors[flashcard.difficulty].text}`}>
                   {flashcard.difficulty} kyu
                 </span>
               </td>
               <td className="py-4 px-4">
                 <div className="flex flex-wrap gap-1">
-                  {flashcard.topics?.map((topic: string) => (
+                  {flashcard.topics?.map((topic: Topic) => (
                     <span
                       key={topic}
-                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-200"
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${topicColors[topic].bg} ${topicColors[topic].text}`}
                     >
                       {topic}
                     </span>
@@ -108,6 +168,48 @@ export function FlashcardList({ onEdit }: Props) {
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+export function FlashcardCard({ flashcard, onEdit }: { flashcard: Flashcard; onEdit: (card: Flashcard) => void }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  return (
+    <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+      <div className="flex justify-between items-start">
+        <h3 className="text-lg font-medium text-white">{flashcard.title}</h3>
+        {/* ... other header content ... */}
+      </div>
+      
+      {/* Show truncated explanation by default */}
+      <div className="text-gray-300">
+        <p className={`${isExpanded ? '' : 'line-clamp-2'}`}>
+          {flashcard.explanation}
+        </p>
+        
+        {/* Only show expand button if explanation is long enough */}
+        {flashcard.explanation.length > 100 && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center mt-2"
+          >
+            {isExpanded ? (
+              <>
+                <ChevronUp className="h-4 w-4 mr-1" />
+                Show less
+              </>
+            ) : (
+              <>
+                <ChevronDown className="h-4 w-4 mr-1" />
+                Show more
+              </>
+            )}
+          </button>
+        )}
+      </div>
+      
+      {/* ... rest of the card content ... */}
     </div>
   );
 }
