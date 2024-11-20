@@ -33,10 +33,10 @@ export function Header() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
-                Interview Flashcards
+                Interactive Flashcards
               </h1>
               <p className="text-sm text-gray-400">
-                Review and practice coding questions
+                Review and practice every day with flashcards
               </p>
             </div>
           </div>
