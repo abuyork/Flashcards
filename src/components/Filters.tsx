@@ -19,6 +19,11 @@ export function Filters() {
   const [isTopicsOpen, setIsTopicsOpen] = useState(false);
   const [isDifficultyOpen, setIsDifficultyOpen] = useState(false);
 
+  const formatDifficulty = (difficulty: KyuLevel | null) => {
+    if (!difficulty) return 'All Levels';
+    return difficulty === 'Train' ? 'Train' : `${difficulty} kyu`;
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-4 space-y-4">
       <div className="relative">
@@ -42,7 +47,7 @@ export function Filters() {
             onClick={() => setIsDifficultyOpen(!isDifficultyOpen)}
             className="w-full flex items-center justify-between px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           >
-            <span>{filters.difficulty ? `${filters.difficulty} kyu` : 'All Levels'}</span>
+            <span>{formatDifficulty(filters.difficulty)}</span>
             <ChevronDown className={`h-4 w-4 transition-transform ${isDifficultyOpen ? 'rotate-180' : ''}`} />
           </button>
           {isDifficultyOpen && (
