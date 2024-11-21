@@ -106,10 +106,13 @@ export function ReviewMode({ onClose }: Props) {
       const updatedCards = calculateReviewableCards();
       setRemainingCards(updatedCards);
       
+      if (currentIndex === remainingCards.length - 1 || updatedCards.length === 0) {
+        onClose();
+        return;
+      }
+      
       if (currentIndex < updatedCards.length - 1) {
         handleNext();
-      } else if (updatedCards.length === 0) {
-        onClose();
       }
     } catch (error) {
       console.error('Failed to review flashcard:', error);
