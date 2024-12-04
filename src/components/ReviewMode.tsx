@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { Editor } from '@monaco-editor/react';
 import { ChevronLeft, ChevronRight, Code, ThumbsDown, ThumbsUp, X } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import { KyuLevel } from '../types';
 
 interface Props {
   onClose: () => void;
+  initialDifficulty: KyuLevel | 'all';
 }
 
-export function ReviewMode({ onClose }: Props) {
+export function ReviewMode({ onClose, initialDifficulty }: Props) {
   const { flashcards, reviewFlashcard } = useStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showSolution, setShowSolution] = useState(false);
@@ -18,9 +20,11 @@ export function ReviewMode({ onClose }: Props) {
   const [remainingCards, setRemainingCards] = useState<typeof flashcards>([]);
 
   const calculateReviewableCards = () => {
-    return flashcards.filter(
-      (card) => !card.nextReview || new Date() >= new Date(card.nextReview)
-    );
+    return flashcards.filter(card => {
+      const isReviewable = !card.nextReview || new Date() >= new Date(card.nextReview);
+      const matchesDifficulty = initialDifficulty === 'all' || card.difficulty === initialDifficulty;
+      return isReviewable && matchesDifficulty;
+    });
   };
 
   useEffect(() => {
@@ -119,23 +123,29 @@ export function ReviewMode({ onClose }: Props) {
     }
   };
 
-  if (!currentCard) {
+  if (remainingCards.length === 0) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white dark:bg-gray-900 rounded-lg w-full max-w-2xl p-6">
           <div className="text-center">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              All caught up! 🎉
+              No cards available for review!
             </h3>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              You've reviewed all available flashcards. Come back later for more!
+              {initialDifficulty === 'all' 
+                ? "You've reviewed all available flashcards. Come back later for more!"
+                : "No cards available for this difficulty level. Try selecting a different level or come back later!"}
             </p>
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-            >
-              Close
-            </button>
+            <div className="space-y-4">
+              <div className="w-full max-w-xs mx-auto">
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -149,6 +159,7 @@ export function ReviewMode({ onClose }: Props) {
           <div className="flex justify-between items-center mb-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-sm">
               <span className="font-medium text-gray-500 dark:text-gray-400">
+                {initialDifficulty === 'all' ? 'All Levels' : `${initialDifficulty} kyu`} •{' '}
                 Card {currentIndex + 1} of {remainingCards.length}
               </span>
               <span className="font-medium text-gray-500 dark:text-gray-400">
